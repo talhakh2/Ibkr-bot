@@ -9,7 +9,7 @@ load_dotenv()
 port = os.getenv("PORT")  # Use default IBKR TWS port
 ibkr_api = str(os.getenv("IBKR_API"))
 
-def ensure_connected(ib_instance: IB, clientId=1):
+def ensure_connected(ib_instance: IB, clientId=0):
 
     if not ib_instance.isConnected():
         try:

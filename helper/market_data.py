@@ -5,7 +5,7 @@ import math
 ib_market = IB()
 
 def Market_data(ib: IB, contract, symbol):
-    ensure_connected(ib_market, 2)
+    ensure_connected(ib_market, 1)
     # Subscribe to market data with a snapshot
     market_data = ib_market.reqMktData(contract, snapshot=True)
     print(f"Fetching market data for {market_data}")

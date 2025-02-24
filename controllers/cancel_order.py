@@ -1,6 +1,7 @@
 from helper.db_connection import trades_collection 
 from controllers.utils.exit_trade import exit_trade
 from helper.Ibkr_connection import ensure_connected
+from helper.Ibkr_connection import disconnect_from_ibkr
 from helper.event_loop import ensure_event_loop
 from datetime import datetime
 from bson import ObjectId
@@ -23,7 +24,7 @@ def cancel_order_by_mongo_id(ib: IB, mongo_id: str):
             return
         
         ensure_event_loop()
-        ensure_connected(ib)
+        ensure_connected(ib, 1)
 
         contract = Stock(trade_record['symbol'], 'SMART', 'USD')
         exit_trade(
@@ -45,6 +46,9 @@ def cancel_order_by_mongo_id(ib: IB, mongo_id: str):
         print(f"Error Cancelling trade: {e}")
         trades_collection.update_one({"_id": ObjectId(mongo_id)},
                                     {"$set": { "status": "Cancellation Failed"}})
+    finally:
+        disconnect_from_ibkr(ib)
+        
 
         
 

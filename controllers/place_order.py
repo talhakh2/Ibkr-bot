@@ -60,10 +60,11 @@ def place_stoploss(ib: IB, action, quantity, current_price, contract, stop_loss_
 # Route Function.
 def place_order(ib: IB, symbol, action, quantity, entry_time, exit_time, stop_loss_ticks):
     try:
+        print(f"Order received. Entry time: {entry_time}, Exit time: {exit_time}")
+        
         ensure_event_loop() 
         ensure_connected(ib, 0)
 
-        print(f"Order received. Entry time: {entry_time}, Exit time: {exit_time}")
 
         # Create an initial trade record (status "Waiting for Entry")
         pending_record = {

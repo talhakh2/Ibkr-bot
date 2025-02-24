@@ -61,7 +61,7 @@ def place_stoploss(ib: IB, action, quantity, current_price, contract, stop_loss_
 def place_order(ib: IB, symbol, action, quantity, entry_time, exit_time, stop_loss_ticks):
     try:
         ensure_event_loop() 
-        ensure_connected(ib, clientId=0)
+        
 
         print(f"Order received. Entry time: {entry_time}, Exit time: {exit_time}")
 
@@ -98,6 +98,9 @@ def place_order(ib: IB, symbol, action, quantity, entry_time, exit_time, stop_lo
             return
 
         print(f"\n WAIT ENDED {entry_time}...\n")
+
+        ensure_connected(ib, clientId=0)
+        
         contract = Stock(symbol, 'SMART', 'USD')
         print("contract: ", contract)
         qualified = ib.qualifyContracts(contract)

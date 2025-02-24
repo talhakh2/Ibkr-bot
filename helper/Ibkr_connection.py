@@ -1,6 +1,7 @@
 from ib_insync import IB
 import os
 from dotenv import load_dotenv
+from itertools import count
 
 # Load environment variables from .env file
 load_dotenv()
@@ -9,11 +10,14 @@ load_dotenv()
 port = os.getenv("PORT")  # Use default IBKR TWS port
 ibkr_api = str(os.getenv("IBKR_API"))
 
+clientId_counter = count(1)
+
 def ensure_connected(ib_instance: IB, clientId=0):
 
     if not ib_instance.isConnected():
         try:
-            ib_instance.connect(ibkr_api, port, clientId=clientId)
+            cid = next(clientId_counter)
+            ib_instance.connect(ibkr_api, port, clientId=cid)
             print(f"Connected to IBKR (Client ID: {clientId}) at {ib_instance.reqCurrentTime()}")
         except Exception as e:
             print(f"Error connecting to IBKR: {e}")

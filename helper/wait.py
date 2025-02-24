@@ -10,6 +10,7 @@ def wait_until(target_time: datetime, mongo_id) -> bool:
     print("datetime.now(): ", datetime.now())
     print("target_time: ", target_time)
     while datetime.now() < target_time:
+        print("current_time: ", datetime.now())
         if trade_record and trade_record.get("cancel_requested"):
             print("Current time: ", datetime.now())
             print(f"Trade {mongo_id} was canceled.")

@@ -13,7 +13,6 @@ ibkr_api = str(os.getenv("IBKR_API"))
 clientId_counter = count(1)
 
 def ensure_connected(ib_instance: IB, clientId=0):
-
     if not ib_instance.isConnected():
         try:
             cid = next(clientId_counter)

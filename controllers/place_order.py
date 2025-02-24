@@ -3,7 +3,6 @@ import math
 import threading
 from bson import ObjectId
 from helper.Ibkr_connection import ensure_connected
-from helper.Ibkr_connection import disconnect_from_ibkr
 from helper.event_loop import ensure_event_loop
 from helper.db_connection import trades_collection
 from helper.wait import wait_until
@@ -62,7 +61,7 @@ def place_stoploss(ib: IB, action, quantity, current_price, contract, stop_loss_
 def place_order(ib: IB, symbol, action, quantity, entry_time, exit_time, stop_loss_ticks):
     try:
         ensure_event_loop() 
-        
+        ensure_connected(ib, 0)
 
         print(f"Order received. Entry time: {entry_time}, Exit time: {exit_time}")
 
@@ -99,18 +98,16 @@ def place_order(ib: IB, symbol, action, quantity, entry_time, exit_time, stop_lo
             return
 
         print(f"\n WAIT ENDED {entry_time}...\n")
-
-        ensure_connected(ib, clientId=0)
-
         contract = Stock(symbol, 'SMART', 'USD')
-        print("contract: ", contract)
-        qualified = ib.qualifyContracts(contract)
+        # print("contract: ", contract)
+        # qualified = ib.qualifyContracts(contract)
 
-        print("Qualification of Stock (0 if not): ", len(qualified))
-        if len(qualified) == 0:
-            trades_collection.update_one({"_id": ObjectId(mongo_id)},
-                                         {"$set": {"status": "Stock Not Qualified"}})
-            return
+        # print("Qualification of Stock (0 if not): ", len(qualified))
+        # if len(qualified) == 0:
+        #     trades_collection.update_one({"_id": ObjectId(mongo_id)},
+        #                                  {"$set": {"status": "Stock Not Qualified"}})
+        #     return
+
         #Execute trade time reached.
         current_price = enter_trade(ib, action, quantity, contract, symbol, mongo_id)
 
@@ -131,5 +128,5 @@ def place_order(ib: IB, symbol, action, quantity, entry_time, exit_time, stop_lo
         print("Error placing order:", e)
 
     finally:
-        disconnect_from_ibkr(ib)
+        # ib.disconnect()
         print("Main IBKR.")

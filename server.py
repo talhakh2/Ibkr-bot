@@ -29,7 +29,7 @@ class CancelOrderRequest(BaseModel):
 # -----------------------------
 # API Endpoints
 # -----------------------------
-@app.get("/check")
+@app.get("/api/check")
 def read_root():
     return {"message": "Hello! from IBKR-BOT"}
 

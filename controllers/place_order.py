@@ -3,6 +3,7 @@ import math
 import threading
 from bson import ObjectId
 from helper.Ibkr_connection import ensure_connected
+from helper.Ibkr_connection import disconnect_from_ibkr
 from helper.event_loop import ensure_event_loop
 from helper.db_connection import trades_collection
 from helper.wait import wait_until
@@ -100,7 +101,7 @@ def place_order(ib: IB, symbol, action, quantity, entry_time, exit_time, stop_lo
         print(f"\n WAIT ENDED {entry_time}...\n")
 
         ensure_connected(ib, clientId=0)
-        
+
         contract = Stock(symbol, 'SMART', 'USD')
         print("contract: ", contract)
         qualified = ib.qualifyContracts(contract)
@@ -130,5 +131,5 @@ def place_order(ib: IB, symbol, action, quantity, entry_time, exit_time, stop_lo
         print("Error placing order:", e)
 
     finally:
-        # ib.disconnect()
+        disconnect_from_ibkr(ib)
         print("Main IBKR.")

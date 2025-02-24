@@ -17,7 +17,7 @@ def ensure_connected(ib_instance: IB, clientId=0):
     if not ib_instance.isConnected():
         try:
             cid = next(clientId_counter)
-            ib_instance.connect(ibkr_api, port, clientId=cid)
+            ib_instance.connect(ibkr_api, port, clientId=clientId)
             print(f"Connected to IBKR (Client ID: {clientId}) at {ib_instance.reqCurrentTime()}")
         except Exception as e:
             print(f"Error connecting to IBKR: {e}")
@@ -30,6 +30,6 @@ def ensure_connected(ib_instance: IB, clientId=0):
 def disconnect_from_ibkr(ib_instance: IB):
     try:
         ib_instance.disconnect()
-        print("Disconnected from IBKR.")
+        print(f"{ib_instance} Disconnected from IBKR.")
     except Exception as e:
         print(f"Error disconnecting from IBKR: {e}")

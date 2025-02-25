@@ -6,12 +6,17 @@ from controllers.place_order import place_order
 import os
 import uvicorn
 from helper.db_connection import trades_collection
-from helper.Ibkr_connection import ensure_connected, disconnect_from_ibkr
+from helper.Ibkr_connection import ensure_connected
 from controllers.cancel_order import cancel_order_by_mongo_id
 from helper.event_loop import ensure_event_loop
 
 app = FastAPI()
 ib = IB()
+ib_order = IB()
+
+
+port = os.getenv("PORT")  # Use default IBKR TWS port
+ibkr_api = str(os.getenv("IBKR_API"))
 
 # -----------------------------
 # Data Models for Endpoints
@@ -64,14 +69,20 @@ def cancel_order_endpoint(cancel_req: CancelOrderRequest):
 
 
 @app.get("/orders")
-def get_orders():
+async def get_orders():
     try:
+
         orders = list(trades_collection.find({"entryOrderId": {"$exists": True}}))
-        ensure_event_loop()
-        ensure_connected(ib, 1)
+        
+        p = await ib_order.connectAsync(ibkr_api, port, clientId=3)
+        print("Connected to IBKR at", p)
+
         # Example usage
         exec_filter = ExecutionFilter()
-        executions = ib.reqExecutions(exec_filter)
+        executions = await ib_order.reqExecutionsAsync(exec_filter)
+
+        print("Exdcutions Fetched. ")
+
 
         for order in orders:
             # Extract order IDs
@@ -114,9 +125,8 @@ def get_orders():
         print("ex: ", e)
         raise HTTPException(status_code=500, detail=str(e))
     finally:
-        print("ib_order disconnected")
-        disconnect_from_ibkr(ib)
+        print("order exit")
 
 if __name__ == "__main__":
-    app_port = int(os.environ.get("APP_PORT"))  # Use PORT from env, default to 8000
+    app_port = int(os.environ.get("APP_PORT")) 
     uvicorn.run(app, host="0.0.0.0", port=app_port)

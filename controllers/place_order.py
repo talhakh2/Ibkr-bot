@@ -19,7 +19,7 @@ def enter_trade(ib: IB, action, quantity, contract, symbol, mongo_id):
     current_price = Market_data(ib, contract, symbol)
     
     if math.isnan(current_price):
-        current_price = 245
+        current_price = 0
         # return 0
     while trade.orderStatus.orderId == 0:
         ib.sleep(1)
@@ -100,6 +100,7 @@ def place_order(ib: IB, symbol, action, quantity, entry_time, exit_time, stop_lo
 
         print(f"\n WAIT ENDED {entry_time}...\n")
         contract = Stock(symbol, 'SMART', 'USD')
+        
         # print("contract: ", contract)
         # qualified = ib.qualifyContracts(contract)
 
@@ -129,5 +130,4 @@ def place_order(ib: IB, symbol, action, quantity, entry_time, exit_time, stop_lo
         print("Error placing order:", e)
 
     finally:
-        # ib.disconnect()
         print("Main IBKR.")

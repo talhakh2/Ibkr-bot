@@ -2,6 +2,7 @@ from bson import ObjectId
 from ib_insync import IB, StopOrder, MarketOrder
 from helper.db_connection import trades_collection
 from helper.market_data import Market_data
+import math
 
 # Checking if stop is already executed
 def cancel_stop(ib: IB, mongo_id):
@@ -64,6 +65,9 @@ def exit_trade(ib: IB, mongo_id, quantity, action, symbol, contract):
 
             # Fetch market price to calculate stop loss price
             exit_price = Market_data(ib, contract, symbol)
+
+            if math.isnan(exit_price):
+                exit_price = 0
 
             while exit_trade.orderStatus.orderId == 0:
                 ib.sleep(1)

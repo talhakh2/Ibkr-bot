@@ -74,7 +74,7 @@ async def get_orders():
 
         orders = list(trades_collection.find({"entryOrderId": {"$exists": True}}))
         
-        p = await ib_order.connectAsync(ibkr_api, port, clientId=3)
+        p = await ib_order.connectAsync(ibkr_api, port, clientId=1)
         print("Connected to IBKR at", p)
 
         # Example usage

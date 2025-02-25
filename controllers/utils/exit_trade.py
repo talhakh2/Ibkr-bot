@@ -24,6 +24,7 @@ def cancel_stop(ib: IB, mongo_id):
         # Checking if stop order is stil open - 
         # if yes than it means stop loss is not executed yet
         open_orders = ib.openOrders()
+        print("open_orders; ", open_orders)
         for open_order in open_orders:
             if open_order.orderId == stop_loss_order_data.get("orderId"):
                 print("StopOrder is still Open with ID: ", open_order.orderId, "and",
@@ -33,7 +34,7 @@ def cancel_stop(ib: IB, mongo_id):
             
         # Exit the trade if stoploss trade is not executed till exit time.
         # else if stop loss is executed than execute exit trade
-        if stop_order_open and stop_order_open == True:
+        if stop_order_open == True:
             print("Canceling StopLoss trade, and executing exit ")
             ib.cancelOrder(stop_loss_order)   
             ib.sleep(2)
@@ -45,6 +46,7 @@ def cancel_stop(ib: IB, mongo_id):
                                         "status": "Stop Executed", "StopLossExecuted": True, 
                                         "exitOrderId": stop_loss_order_data.get("orderId")}})
             return False
+        
     else:
         print("Data for the trade is not in database. Cannot determine exit condition.")
         trades_collection.update_one({"_id": ObjectId(mongo_id)},
@@ -56,8 +58,8 @@ def exit_trade(ib: IB, mongo_id, quantity, action, symbol, contract):
     try:
         
         # if Stop order was opened and got canceled 
-        if cancel_stop(ib, mongo_id):
-
+        if cancel_stop(ib, mongo_id) == True:
+            print("Exiting Trade... Stop Loss Cancelled.")
             # Place exit order if condition met.
             exit_order = MarketOrder('SELL' if action.upper() == "BUY" else 'BUY', quantity)
             exit_trade = ib.placeOrder(contract, exit_order)
